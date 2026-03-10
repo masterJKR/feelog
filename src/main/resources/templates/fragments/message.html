@@ -1,4 +1,49 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
+<div th:fragment="message" class="max-w-7xl mx-auto px-6 mt-6 space-y-4">
+
+    <!-- 성공 메시지 -->
+    <div th:if="${successMessage}"
+         class="flex items-start gap-3 p-4 rounded-2xl border border-green-200 bg-green-50 text-green-800 shadow-sm">
+
+        <div class="text-xl">🌿</div>
+
+        <div>
+            <p class="font-semibold">성공</p>
+            <p class="text-sm mt-1" th:text="${successMessage}"></p>
+        </div>
+
+    </div>
+
+
+    <!-- 에러 메시지 -->
+    <div th:if="${errorMessage}"
+         class="flex items-start gap-3 p-4 rounded-2xl border border-red-200 bg-red-50 text-red-800 shadow-sm">
+
+        <div class="text-xl">⚠️</div>
+
+        <div>
+            <p class="font-semibold">문제가 발생했습니다</p>
+            <p class="text-sm mt-1" th:text="${errorMessage}"></p>
+        </div>
+
+    </div>
+
+
+    <!-- 경고 메시지 -->
+    <div th:if="${warningMessage}"
+         class="flex items-start gap-3 p-4 rounded-2xl border border-amber-200 bg-amber-50 text-amber-800 shadow-sm">
+
+        <div class="text-xl">🌤</div>
+
+        <div>
+            <p class="font-semibold">알림</p>
+            <p class="text-sm mt-1" th:text="${warningMessage}"></p>
+        </div>
+
+    </div>
+
+</div>
+
 </html>
