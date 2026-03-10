@@ -1,10 +1,42 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
+
+<header th:fragment="header" class="w-full">
+    <div class="bg-gradient-to-r from-rose-100 via-orange-50
+    to-amber-100 border-b border-rose-200/60 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-10">
+            <div class="flex flex-col gap-4
+            md:flex-row md:items-center md:justify-between">
+                <div>
+                    <a th:href="@{/}" class="inline-flex items-center gap-3 group">
+                        <div class="w-12 h-12 rounded-2xl bg-white/80
+                        border border-rose-200 shadow-sm flex items-center justify-center
+                        text-2xl group-hover:scale-105 transition text-red-600">
+                            ♥
+                        </div>
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-rose-700
+                                        tracking-tight">
+                                마음온도
+                            </h1>
+                            <p class="text-sm text-rose-500 mt-1">
+                                오늘의 감정을 조용히 꺼내놓고, 서로의 마음에 온기를 더하는 공간
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center gap-3 text-sm text-stone-600">
+                    <span class="px-3 py-1 rounded-full bg-white/70 border border-rose-200">감정 기록</span>
+                    <span class="px-3 py-1 rounded-full bg-white/70 border border-orange-200">공감 나누기</span>
+                    <span class="px-3 py-1 rounded-full bg-white/70 border border-amber-200">따뜻한 응원</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+</header>
+
+
 </html>
