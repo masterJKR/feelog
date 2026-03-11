@@ -25,12 +25,12 @@
                     </label>
 
                     <input type="text"
-                           th:field="*{username}"
+                           th:field="*{email}"
                            placeholder="아이디를 입력하세요"
                            class="w-full rounded-xl border border-stone-300 px-4 py-3 focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none"/>
 
-                    <p th:if="${#fields.hasErrors('username')}"
-                       th:errors="*{username}"
+                    <p th:if="${#fields.hasErrors('email')}"
+                       th:errors="*{email}"
                        class="text-red-500 text-sm mt-1"></p>
 
                 </div>
