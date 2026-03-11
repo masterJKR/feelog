@@ -21,12 +21,12 @@
                 <!-- 아이디 -->
                 <div>
                     <label class="block text-sm font-medium text-stone-700 mb-1">
-                        아이디
+                        이메일
                     </label>
 
                     <input type="text"
                            th:field="*{email}"
-                           placeholder="아이디를 입력하세요"
+                           placeholder="이메일을 입력하세요"
                            class="w-full rounded-xl border border-stone-300 px-4 py-3 focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none"/>
 
                     <p th:if="${#fields.hasErrors('email')}"
@@ -79,7 +79,8 @@
                            th:field="*{passwordConfirm}"
                            placeholder="비밀번호 다시 입력"
                            class="w-full rounded-xl border border-stone-300 px-4 py-3 focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none"/>
-
+                    <p th:if="${errorMessage != null}"
+                       th:text="${errorMessage}" class="text-red-500 text-sm mt-1"></p>
                 </div>
 
                 <!-- 제출 버튼 -->

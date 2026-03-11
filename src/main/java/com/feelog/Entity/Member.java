@@ -4,6 +4,8 @@ import com.feelog.constant.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -28,8 +30,11 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false)
+    @CreationTimestamp  // 최초 데이터 저장 시간
     private LocalDateTime createdAt;
-    @Column(nullable = false)
+
+    @UpdateTimestamp // 데이터 수정 시간
     private LocalDateTime updatedAt;
+
+
 }
