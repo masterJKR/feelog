@@ -23,6 +23,14 @@ public class PostController {
 
     private final DiaryService diaryService;
 
+    @GetMapping
+    public String diaryList(Model model, Principal principal) {
+
+        model.addAttribute("diaryList", diaryService.getDiaryList());
+        return "diary/list";
+    }
+
+
     @GetMapping("/new")  //   주소 -> /diary/new
     public String formPage(Model model){
         model.addAttribute("diaryDto", new DiaryDto());

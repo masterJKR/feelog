@@ -1,6 +1,7 @@
 package com.feelog.service;
 
 import com.feelog.Dto.DiaryDto;
+import com.feelog.Dto.DiaryListDto;
 import com.feelog.Entity.Diary;
 import com.feelog.Entity.Member;
 import com.feelog.repository.DiaryRepository;
@@ -9,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DiaryService {
@@ -16,6 +20,20 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
+
+    
+    // 목록 출력할 내용 가져오기
+    public List<DiaryListDto> getDiaryList() {
+        List<Diary> diaryList = diaryRepository.findAll();
+        List<DiaryListDto> diaryListDtos = new ArrayList<>();
+        for (Diary diary : diaryList) {
+            DiaryListDto dto = modelMapper.map(diary, DiaryListDto.class);
+            diaryListDtos.add(dto);
+        }
+        return diaryListDtos;
+
+    }
+
 
     public void saveDiary(DiaryDto diaryDto , String email){
         Diary diary = modelMapper.map(diaryDto, Diary.class);
