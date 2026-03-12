@@ -5,6 +5,7 @@ import com.feelog.Entity.Member;
 import com.feelog.constant.Role;
 import com.feelog.repository.MemberProfileRepository;
 import com.feelog.repository.MemberRepository;
+import com.feelog.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
@@ -45,11 +46,7 @@ public class MemberService implements UserDetailsService {
         if( member == null){
             throw new UsernameNotFoundException(username);
         }
-        return User.builder()
-                .username(member.getEmail())
-                .password(member.getPassword())
-                .roles(member.getRole().toString().replace("ROLE_", ""))
-                .build();
+        return new CustomUserDetails(member);
     }
 
 }

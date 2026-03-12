@@ -26,7 +26,14 @@
             </div>
             <!-- 로그인 -->
             <div sec:authorize="isAuthenticated()" class="flex items-center gap-2">
-
+                <span class="text-sm text-stone-700">
+                    <span sec:authentication="principal.name"></span>님
+                </span>
+                <a th:href="@{/logout}"
+                   class="px-4 py-2 rounded-xl text-sm font-medium
+                   text-stone-600 hover:text-stone-600 transition">
+                    로그아웃
+                </a>
             </div>
             <!--  비로그인 -->
             <div sec:authorize="isAnonymous()" class="flex items-center gap-2">
