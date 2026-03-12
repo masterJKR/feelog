@@ -166,6 +166,17 @@
             overflow: hidden;
         }
     </style>
+
+    <!-- 페이징 번호 영역 -->
+
+    <div th:with="start=${ (diaryList.number/5)*5 +1 } ,
+        end=( ${ (diaryList.totalPages == 0 ) ? 1 :
+         (start + ( 5 - 1 ) < diaryList.totalPages ? start + ( 5 - 1 ) :
+         diaryList.totalPages)})">
+
+    </div>
+
+
 </div>
 
 </html>

@@ -8,6 +8,9 @@ import com.feelog.repository.DiaryRepository;
 import com.feelog.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,14 +26,16 @@ public class DiaryService {
 
     
     // 목록 출력할 내용 가져오기
-    public List<DiaryListDto> getDiaryList() {
-        List<Diary> diaryList = diaryRepository.findAll();
+    public Page<DiaryListDto> getDiaryList(Pageable pageable) {
+
+        List<Diary> diaryList = diaryRepository.findAllByOrderByIdDesc(pageable);
+
         List<DiaryListDto> diaryListDtos = new ArrayList<>();
         for (Diary diary : diaryList) {
             DiaryListDto dto = modelMapper.map(diary, DiaryListDto.class);
             diaryListDtos.add(dto);
         }
-        return diaryListDtos;
+        return new PageImpl<>(diaryListDtos, pageable, diaryRepository.count());
 
     }
 

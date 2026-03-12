@@ -19,7 +19,7 @@ public class Diary {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id" ,unique = true, nullable = false)
+    @JoinColumn(name="member_id" )
     private Member member;
 
     // 일기 날짜
