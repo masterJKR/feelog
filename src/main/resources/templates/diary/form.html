@@ -4,7 +4,278 @@
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="main">
+    <main class="flex-grow px-6 py-10 md:py-14">
+        <div class="max-w-5xl mx-auto">
 
+            <!-- 상단 인트로 -->
+            <section class="mb-8">
+                <div class="rounded-[2rem] border border-rose-100 bg-white/80 backdrop-blur p-6 md:p-8 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                        <div>
+                        <span class="inline-flex items-center rounded-full bg-rose-50 border border-rose-200 px-4 py-2 text-sm text-rose-700">
+                            📖 오늘의 마음을 기록하는 시간
+                        </span>
+
+                            <h1 class="mt-4 text-3xl md:text-4xl font-bold text-rose-700 leading-tight">
+                                감정은 지나가는 것이지만,
+                                기록은 마음의 지도를 남깁니다.
+                            </h1>
+
+                            <p class="mt-4 text-sm md:text-base leading-7 text-stone-600">
+                                오늘의 기분, 마음에 남은 장면, 스쳐간 생각을 적어보세요.
+                                누군가에게 보여주기 위한 글이 아니라,
+                                오늘의 나를 조금 더 이해하기 위한 기록이어도 충분합니다.
+                            </p>
+                        </div>
+
+                        <div class="shrink-0">
+                            <div class="w-28 h-28 rounded-full bg-gradient-to-br from-rose-100 via-orange-100 to-amber-100 border border-rose-200 flex items-center justify-center text-5xl shadow-sm">
+                                🌼
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- 왼쪽 안내 카드 -->
+                <aside class="space-y-6">
+                    <div class="rounded-3xl border border-rose-100 bg-white/85 p-6 shadow-sm">
+                        <h2 class="text-lg font-bold text-rose-700">작성 힌트</h2>
+                        <ul class="mt-4 space-y-3 text-sm leading-6 text-stone-600">
+                            <li>• 오늘 가장 크게 느껴진 감정은 무엇이었나요?</li>
+                            <li>• 그 감정을 만든 사건이나 순간이 있었나요?</li>
+                            <li>• 지금의 나에게 해주고 싶은 말이 있나요?</li>
+                            <li>• 짧게 적어도 괜찮고, 두서없어도 괜찮아요.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rounded-3xl border border-orange-100 bg-white/85 p-6 shadow-sm">
+                        <h2 class="text-lg font-bold text-orange-600">오늘의 문장</h2>
+                        <p class="mt-4 text-sm leading-7 text-stone-600">
+                            감정은 맞고 틀린 것이 아니라,
+                            그저 지금의 내가 보내는 신호일지도 모릅니다.
+                        </p>
+                    </div>
+
+                    <div class="rounded-3xl border border-amber-100 bg-white/85 p-6 shadow-sm">
+                        <h2 class="text-lg font-bold text-amber-600">기록 예시</h2>
+                        <p class="mt-4 text-sm leading-7 text-stone-600">
+                            오늘은 별일 없었는데도 마음이 조금 가라앉았다.
+                            이유를 정확히 모르겠지만, 그럴수록 나를 너무 몰아붙이지 않기로 했다.
+                        </p>
+                    </div>
+                </aside>
+
+                <!-- 작성 폼 -->
+                <section class="lg:col-span-2 rounded-[2rem] border border-rose-100 bg-white/90 backdrop-blur p-6 md:p-8 shadow-lg">
+                    <form th:action="@{/diary/new}"
+                          method="post"
+                          th:object="${diaryDto}"
+                          class="space-y-7">
+
+                        <!-- 날짜 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-700 mb-2">
+                                작성일
+                            </label>
+                            <input type="date"
+                                   th:field="*{diaryDate}"
+                                   class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+                            <p th:if="${#fields.hasErrors('diaryDate')}"
+                               th:errors="*{diaryDate}"
+                               class="mt-2 text-sm text-red-500"></p>
+                        </div>
+
+                        <!-- 감정 선택 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-700 mb-3">
+                                오늘의 대표 감정
+                            </label>
+
+                            <select th:field="*{emotion}"
+                                    class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-stone-700 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+                                <option value="">감정을 선택해주세요</option>
+                                <option th:each="e : ${emotionList}"
+                                        th:value="${e}" th:text="${e.label}"></option>
+                            </select>
+
+                            <p th:if="${#fields.hasErrors('emotion')}"
+                               th:errors="*{emotion}"
+                               class="mt-2 text-sm text-red-500"></p>
+                        </div>
+
+                        <!-- 한 줄 제목 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-700 mb-2">
+                                오늘의 한 줄
+                            </label>
+
+                            <input type="text"
+                                   th:field="*{title}"
+                                   placeholder="예 : 괜찮은 척했지만 조금 지쳐 있던 하루"
+                                   class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+
+                            <p th:if="${#fields.hasErrors('title')}"
+                               th:errors="*{title}"
+                               class="mt-2 text-sm text-red-500"></p>
+                        </div>
+
+                        <!-- 날씨/기분 온도 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-stone-700 mb-2">
+                                    오늘의 기분 날씨
+                                </label>
+                                <select th:field="*{moodWeather}"
+                                        class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+                                    <option value="">선택해주세요</option>
+                                    <option th:each="weather : ${moodWeatherList}"
+                                        th:value="${weather}" th:text="${weather.label}"></option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-stone-700 mb-2">
+                                    마음 온도
+                                </label>
+                                <input type="number"
+                                       th:field="*{emotionScore}"
+                                       min="1"
+                                       max="100"
+                                       placeholder="1 ~ 100"
+                                       class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+                            </div>
+                        </div>
+
+                        <!-- 본문 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-700 mb-2">
+                                오늘의 기록
+                            </label>
+
+                            <textarea th:field="*{content}"
+                                      id="summernote"
+                                      placeholder="오늘 하루의 감정과 생각을 자유롭게 적어보세요"></textarea>
+
+                            <p th:if="${#fields.hasErrors('content')}"
+                               th:errors="*{content}"
+                               class="mt-2 text-sm text-red-500"></p>
+                        </div>
+
+                        <!-- 공개 여부 / 코멘트 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="rounded-2xl border border-amber-100 bg-amber-50/70 p-4">
+                                <label class="inline-flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox"
+                                           th:field="*{publicVisible}"
+                                           class="h-4 w-4 rounded border-stone-300 text-rose-500 focus:ring-rose-300">
+                                    <span class="text-sm text-stone-700">다른 사람에게 공개하기</span>
+                                </label>
+                                <p class="mt-2 text-xs leading-6 text-stone-500">
+                                    체크하지 않으면 나만 볼 수 있는 비공개 감정일기로 저장됩니다.
+                                </p>
+                            </div>
+
+                            <div class="rounded-2xl border border-rose-100 bg-rose-50/60 p-4">
+                                <label class="inline-flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox"
+                                           th:field="*{allowComment}"
+                                           class="h-4 w-4 rounded border-stone-300 text-rose-500 focus:ring-rose-300">
+                                    <span class="text-sm text-stone-700">공개 시 공감/댓글 허용</span>
+                                </label>
+                                <p class="mt-2 text-xs leading-6 text-stone-500">
+                                    공개 일기인 경우에만 다른 사람의 공감과 댓글을 받을 수 있습니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 자기 자신에게 남기는 말 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-700 mb-2">
+                                오늘의 나에게 한마디
+                            </label>
+                            <textarea th:field="*{noteToMyself}"
+                                      rows="3"
+                                      placeholder="예 : 오늘도 버텨낸 나, 수고했어."
+                                      class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 resize-none outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200"></textarea>
+                        </div>
+
+                        <!-- 안내 -->
+                        <div class="rounded-2xl bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 border border-rose-100 p-5">
+                            <p class="text-sm font-semibold text-rose-700">작은 안내</p>
+                            <ul class="mt-3 space-y-2 text-sm leading-6 text-stone-600">
+                                <li>• 감정일기는 완벽하게 쓰는 것이 아니라, 솔직하게 남기는 기록입니다.</li>
+                                <li>• 오늘의 감정이 좋지 않아도 괜찮습니다. 그 기록 자체가 이미 의미가 있습니다.</li>
+                                <li>• 공개 여부는 언제든 수정할 수 있도록 만들면 더 좋습니다.</li>
+                            </ul>
+                        </div>
+
+                        <!-- 버튼 -->
+                        <div class="flex flex-col sm:flex-row gap-3 justify-end">
+                            <a th:href="@{/diary}"
+                               class="inline-flex justify-center items-center px-6 py-3 rounded-2xl border border-stone-300 bg-white text-stone-700 font-medium hover:bg-stone-50 transition">
+                                목록으로
+                            </a>
+
+                            <button type="submit"
+                                    class="inline-flex justify-center items-center px-6 py-3 rounded-2xl bg-rose-400 text-white font-semibold shadow-md hover:bg-rose-500 transition">
+                                감정일기 저장하기
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="layout/footer :: footer"></div>
+
+    <script>
+        $(document).ready(function () {
+            $('#summernote').summernote({
+                placeholder: '오늘 하루의 감정과 생각을 자유롭게 적어보세요',
+                tabsize: 2,
+                height: 320,
+                focus: false,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link']],
+                    ['view', ['codeview']]
+                ]
+            });
+        });
+    </script>
+
+    <style>
+        .note-editor.note-frame {
+            border-radius: 1rem;
+            border: 1px solid rgb(214 211 209);
+            overflow: hidden;
+            background: white;
+        }
+
+        .note-toolbar {
+            background: rgb(255 247 237);
+            border-bottom: 1px solid rgb(254 205 211);
+        }
+
+        .note-editing-area .note-editable {
+            min-height: 320px;
+            background: white;
+            color: rgb(41 37 36);
+            line-height: 1.8;
+            padding: 1rem 1.25rem;
+        }
+
+        .note-placeholder {
+            color: rgb(168 162 158) !important;
+        }
+    </style>
 </div>
 
 </html>

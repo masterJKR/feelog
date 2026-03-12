@@ -1,17 +1,48 @@
 package com.feelog.control;
 
+import com.feelog.Dto.DiaryDto;
+import com.feelog.constant.Emotion;
+import com.feelog.constant.MoodWeather;
+import com.feelog.service.DiaryService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/diary")
+@RequiredArgsConstructor
 public class PostController {
 
-    @GetMapping("/new")  //   주소 -> /diary/new
-    public String formPage(){
+    private final DiaryService diaryService;
 
+    @GetMapping("/new")  //   주소 -> /diary/new
+    public String formPage(Model model){
+        model.addAttribute("diaryDto", new DiaryDto());
+
+        model.addAttribute("emotionList", Emotion.values());
+        model.addAttribute("moodWeatherList", MoodWeather.values());
         return "diary/form";
+    }
+
+    @PostMapping("/new")
+    public String saveDiary(@Valid DiaryDto diaryDto,
+                            BindingResult bindingResult,
+                            Principal principal){
+        if(bindingResult.hasErrors()){
+            return "diary/form";
+        }
+        // 유효값 체크 문제 없으면  저장하기
+        diaryService.saveDiary(diaryDto , principal.getName()  );
+
+        return "redirect:/"; // 저장후 첫페이지 이동
     }
 }
 
