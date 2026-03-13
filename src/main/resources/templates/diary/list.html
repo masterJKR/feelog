@@ -41,27 +41,57 @@
                 <div class="rounded-3xl border border-rose-100 bg-white/85 p-5 shadow-sm">
                     <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
                         <div class="flex flex-wrap gap-2">
-                            <button type="button" class="px-4 py-2 rounded-full bg-rose-100 text-rose-700 text-sm font-medium border border-rose-200">
+                            <a th:href="@{/diary(keyword=${keyword})}"
+                               th:classappend="${emotion == null} ?
+                               'bg-rose-100 text-rose-700 border-rose-200' :
+                               'bg-white text-stone-600 border-stone-200 hover:border-rose-200 hover:text-rose-600'"
+                               class="px-4 py-2 rounded-full text-sm font-medium border transition">
                                 전체
-                            </button>
-                            <button type="button" class="px-4 py-2 rounded-full bg-white text-stone-600 text-sm font-medium border border-stone-200 hover:border-rose-200 hover:text-rose-600 transition">
+                            </a>
+                            <a th:href="@{/diary(emotion='HAPPY', keyword=${keyword})}"
+                               th:classappend="${emotion != null and emotion.name() == 'HAPPY'} ?
+                               'bg-rose-100 text-rose-700 border-rose-200' :
+                               'bg-white text-stone-600 border-stone-200 hover:border-rose-200 hover:text-rose-600'"
+                               class="px-4 py-2 rounded-full text-sm font-medium border transition">
                                 행복
-                            </button>
-                            <button type="button" class="px-4 py-2 rounded-full bg-white text-stone-600 text-sm font-medium border border-stone-200 hover:border-rose-200 hover:text-rose-600 transition">
+                            </a>
+                            <a th:href="@{/diary(emotion='SAD', keyword=${keyword})}"
+                               th:classappend="${emotion != null and emotion.name() == 'SAD'} ?
+                               'bg-rose-100 text-rose-700 border-rose-200' :
+                               'bg-white text-stone-600 border-stone-200 hover:border-rose-200 hover:text-rose-600'"
+                               class="px-4 py-2 rounded-full text-sm font-medium border transition">
                                 슬픔
-                            </button>
-                            <button type="button" class="px-4 py-2 rounded-full bg-white text-stone-600 text-sm font-medium border border-stone-200 hover:border-rose-200 hover:text-rose-600 transition">
-                                불안
-                            </button>
-                            <button type="button" class="px-4 py-2 rounded-full bg-white text-stone-600 text-sm font-medium border border-stone-200 hover:border-rose-200 hover:text-rose-600 transition">
+                            </a>
+                            <a th:href="@{/diary(emotion='GRATEFUL', keyword=${keyword})}"
+                               th:classappend="${emotion != null and emotion.name() == 'GRATEFUL'} ?
+                               'bg-rose-100 text-rose-700 border-rose-200' :
+                               'bg-white text-stone-600 border-stone-200 hover:border-rose-200 hover:text-rose-600'"
+                               class="px-4 py-2 rounded-full text-sm font-medium border transition">
+                                감사
+                            </a>
+                            <a th:href="@{/diary(emotion='COMFORT', keyword=${keyword})}"
+                               th:classappend="${emotion != null and emotion.name() == 'COMFORT'} ?
+                               'bg-rose-100 text-rose-700 border-rose-200' :
+                               'bg-white text-stone-600 border-stone-200 hover:border-rose-200 hover:text-rose-600'"
+                               class="px-4 py-2 rounded-full text-sm font-medium border transition">
                                 위로
-                            </button>
+                            </a>
                         </div>
 
-                        <div class="w-full lg:w-80">
-                            <input type="text"
-                                   placeholder="제목이나 내용 검색"
-                                   class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+                        <div class="w-full lg:w-100">
+                            <form th:action="@{/diary}" method="get" class="w-full flex gap-2">
+                                <input type="hidden" name="emotion" th:value="${emotion}">
+                                <input type="text"
+                                       name="keyword"
+                                       th:value="${keyword}"
+                                       placeholder="제목이나 내용 검색"
+                                       class="w-80 rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200">
+                                <button
+                                    class="px-5 py-3 rounded-2xl bg-rose-400 text-white font-semibold
+                                                shadow-md hover:bg-rose-500 transition">
+                                    검색</button>
+                            </form>
+
                         </div>
                     </div>
                 </div>
@@ -89,7 +119,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
                     <a th:each="diary : ${diaryList}"
-                       th:href="@{/diary/{id}(id=${diary.id})}"
+                       th:href="@{/diary/detail/{id}(id=${diary.id})}"
                        class="group block rounded-[2rem] border border-rose-100 bg-white/90 backdrop-blur p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition">
 
                         <!-- 상단 -->
@@ -172,7 +202,12 @@
     <div th:with="start=${ (diaryList.number/5)*5 +1 } ,
         end=( ${ (diaryList.totalPages == 0 ) ? 1 :
          (start + ( 5 - 1 ) < diaryList.totalPages ? start + ( 5 - 1 ) :
-         diaryList.totalPages)})">
+         diaryList.totalPages)})" class="flex justify-center">
+        <ul class="flex justify-between gap-4">
+            <li th:each="i : ${#numbers.sequence(start, end)}">
+                <a th:href="@{/diary(page=${i} , emotion=${emotion}, keyword=${ketword})}"  th:text="${i}"></a>
+            </li>
+        </ul>
 
     </div>
 

@@ -1,5 +1,6 @@
 package com.feelog.control;
 
+import com.feelog.Dto.DiaryDetailDto;
 import com.feelog.Dto.DiaryDto;
 import com.feelog.Dto.DiaryListDto;
 import com.feelog.constant.Emotion;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -29,14 +27,30 @@ public class PostController {
 
     private final DiaryService diaryService;
 
+    //  일기 상세 페이지 요청
+    @GetMapping("/detail/{id}")
+    public String diaryDetail(@PathVariable Long id,
+                              Model model, Principal principal) {
+        DiaryDetailDto diaryDetailDto = diaryService.getDiary( id );
+
+        model.addAttribute("diary", diaryDetailDto);
+        return "diary/detail";
+    }
+
+
+    // 일기 목록 페이지 요청- 감정태그, 검색 가능
     @GetMapping
     public String diaryList(Model model, Principal principal,
-                            @RequestParam("page") Optional<Integer> page) {
+                            @RequestParam(value="page", defaultValue = "1") int page ,
+                            @RequestParam(value="keyword", required = false) String keyword,
+                            @RequestParam(value="emotion", required = false) Emotion emotion) {
 
-        Pageable pageable = PageRequest.of( page.isPresent() ? page.get() : 0, 9);
+        Pageable pageable = PageRequest.of( page-1 , 9);
 
-        Page<DiaryListDto> diaryListDtos = diaryService.getDiaryList( pageable );
+        Page<DiaryListDto> diaryListDtos = diaryService.getDiaryList( keyword, emotion, pageable );
 
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("emotion", emotion);
         model.addAttribute("diaryList", diaryListDtos);
         return "diary/list";
     }
