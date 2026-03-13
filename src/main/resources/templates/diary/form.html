@@ -75,6 +75,7 @@
                           th:object="${diaryDto}"
                           class="space-y-7">
 
+                        <input type="hidden"  th:field="*{id}">
                         <!-- 날짜 -->
                         <div>
                             <label class="block text-sm font-semibold text-stone-700 mb-2">

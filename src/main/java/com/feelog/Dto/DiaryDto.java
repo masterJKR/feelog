@@ -5,13 +5,17 @@ import com.feelog.constant.MoodWeather;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 public class DiaryDto {
+    private Long id;
+
     @NotNull(message = "작성일을 선택해주세요.")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate diaryDate;
 
     @NotNull(message = "오늘의 감정을 선택해주세요.")

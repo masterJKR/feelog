@@ -27,11 +27,50 @@ public class PostController {
 
     private final DiaryService diaryService;
 
+    // 일기 삭제  요청
+    @PostMapping("/delete/{id}")
+    public String deleteDiary(@PathVariable Long id,
+                              Principal principal){
+
+        diaryService.deleteDiary( id );
+        // 일기작성자와 로그인사용자가 같은가  확인하는거 필요하다.
+
+        return "redirect:/diary";  // 일기 삭제 하고 목록으로 보내기
+    }
+
+
+
+    // 일기 수정 요청
+    @GetMapping("/edit/{id}")
+    public String edit(Model model, @PathVariable Long id,
+                       Principal principal) {
+
+        DiaryDto diaryDto = diaryService.getMyDiary( id , principal.getName() );
+
+        if ( diaryDto == null ) { // 로그인한 사람과 작성자가 다른경우 - 잘못된 접근
+            return """
+                    <script>
+                        alert('잘못된 접근입니다. 작성자정보와 일치하지않아');
+                        location.href='/diary';
+                    </script>  
+                    """;
+        }
+
+        model.addAttribute("emotionList", Emotion.values());
+        model.addAttribute("moodWeatherList", MoodWeather.values());
+
+        model.addAttribute("diaryDto", diaryDto);
+
+        return "diary/form";  // 새일기 작성 페이지는  수정페이지로 할수 있다.
+                              // 같은 클래스 객체를 다루기 때문에
+    }
+
+
     //  일기 상세 페이지 요청
     @GetMapping("/detail/{id}")
     public String diaryDetail(@PathVariable Long id,
                               Model model, Principal principal) {
-        DiaryDetailDto diaryDetailDto = diaryService.getDiary( id );
+        DiaryDetailDto diaryDetailDto = diaryService.getDiary( id ,principal.getName() );
 
         model.addAttribute("diary", diaryDetailDto);
         return "diary/detail";

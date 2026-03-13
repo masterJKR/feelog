@@ -54,16 +54,23 @@ public class DiaryService {
     }
 
 
-    public DiaryDetailDto getDiary(Long id) {
+    public DiaryDetailDto getDiary(Long id, String email) {
 
         Diary diary = diaryRepository.findById( id ).orElse(null);
 
         DiaryDetailDto diaryDetailDto
                 = modelMapper.map(diary, DiaryDetailDto.class);
         diaryDetailDto.setWriterName( diary.getMember().getName()  );  //일기 작성자
+        diaryDetailDto.setWriterId( diary.getMember().getId() );
+        diaryDetailDto.setWriterEmail( diary.getMember().getEmail() );
 
         diaryDetailDto.setEmotionLabel( diary.getEmotion().getLabel() );
         diaryDetailDto.setEmotionEmoji( getEmoji( diary.getEmotion() ) );
+
+        // 현재 로그인한 사람 정보 가져오기
+        Member login= memberRepository.findByEmail(email);
+        // 일기 작성한 사람과 로그인한 사람이 같은 사람인가? - 삭제,수정 권한
+        diaryDetailDto.setMe( login.getId() == diary.getMember().getId()  );
 
         return diaryDetailDto;
     }
@@ -87,4 +94,20 @@ public class DiaryService {
     }
 
 
+    public DiaryDto getMyDiary(Long id, String name) {
+        // 현재 로그인한 회원 정보
+        Member login =  memberRepository.findByEmail(name);
+        // 수정하려고 하는 일기 정보
+        Diary diary = diaryRepository.findById( id ).orElse(null);
+        if( diary.getMember().getId() != login.getId() )
+            return null;  // 일기작성자와 로그인회원이 다르면
+
+        DiaryDto diaryDto = modelMapper.map(diary, DiaryDto.class);
+        return diaryDto;
+
+    }
+
+    public void deleteDiary(Long id) {
+        diaryRepository.deleteById( id );
+    }
 }

@@ -58,7 +58,6 @@ public class Diary {
 
     // 생성일
     @CreatedDate
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     // 수정일

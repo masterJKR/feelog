@@ -212,7 +212,7 @@
                         <div class="flex-1 min-w-0">
                             <p class="text-base font-bold text-stone-800" th:text="${diary.writerName}">전계림</p>
                             <p class="text-sm text-stone-500 truncate"
-                               th:text="${diary.writerName != null ? diary.writerName : '사용자'}">
+                               th:text="${diary.writerEmail != null ? diary.writerEmail : '사용자'}">
                                 user@example.com
                             </p>
                         </div>
@@ -235,7 +235,8 @@
                     <div class="mt-4 flex items-center justify-between">
                         <div>
                             <p class="text-sm text-stone-500">공감 수</p>
-                            <p class="mt-1 text-2xl font-bold text-rose-600"
+                            <p id="empathyCount" th:data-count="${diary.empathyCount}"
+                               class="mt-1 text-2xl font-bold text-rose-600"
                                th:text="${diary.empathyCount != null ? diary.empathyCount : 0}">
                                 12
                             </p>
@@ -245,12 +246,14 @@
                     </div>
 
                     <div class="mt-5">
-                        <form th:action="@{/diary/empathy{id}(id=${diary.id})}" method="post">
-                            <button type="submit"
+
+                            <button type="button" id="empathyBt"
+                                    th:data-isEmpathy="${diary.empathizedByMe}"
+                                    th:text="${diary.empathizedByMe ?  '공감 회수' : '공감 보내기'}"
                                     class="w-full px-4 py-3 rounded-2xl bg-white border border-rose-200 text-rose-600 font-semibold hover:bg-rose-50 transition">
                                 공감 보내기
                             </button>
-                        </form>
+
                     </div>
                 </section>
 
@@ -282,12 +285,12 @@
                             목록으로
                         </a>
 
-                        <a th:href="@{/diary/edit{id}(id=${diary.id})}"
+                        <a th:if="${diary.me}" th:href="@{/diary/edit/{id}(id=${diary.id})}"
                            class="w-full text-center px-4 py-3 rounded-2xl bg-amber-400 text-white font-semibold hover:bg-amber-500 transition shadow-sm">
                             수정하기
                         </a>
 
-                        <form th:action="@{/diary/delete/{id}(id=${diary.id})}"
+                        <form th:if="${diary.me}" th:action="@{/diary/delete/{id}(id=${diary.id})}"
                               method="post"
                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
                             <button type="submit"
@@ -301,6 +304,37 @@
             </aside>
         </div>
     </main>
+
+    <script>
+        $("#empathyBt").click(
+            function() {
+                // 화면의 공감수 증감 해주기
+                let count = Number( $("#empathyCount").data("count") ); // 현재 공감수
+                let isEmpathy = $(this).data("isempathy"); // 로그인한 사람의 공감여부
+                if( isEmpathy === false)
+                    count++;
+                else
+                    count--;
+                // 화면의 공감수 변경
+                $("#empathyCount").text(count);
+                $("#empathyCount").data("count",count);
+                $(this).text(isEmpathy ? '공감 보내기' : '공감 회수');
+                $(this).data("isempathy",!isEmpathy);
+
+                const data = { id : $("input[name=diaryId]").val() }
+
+                // 서버에 값 보내기
+                $.ajax( {
+                    url : "/api/empathy",
+                    method : "POST" ,
+                    contentType : "application/json",
+                    data : JSON.stringify(data)
+                } );
+            }
+        );
+
+    </script>
+
 </div>
 
 </html>
