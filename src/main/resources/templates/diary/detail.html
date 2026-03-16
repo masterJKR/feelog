@@ -4,6 +4,12 @@
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="main">
+    <head>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    </head>
+
+
 
     <main class="flex-grow px-6 py-10 md:py-14">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -115,7 +121,7 @@
 
                     <!-- 댓글 작성 -->
                     <form th:action="@{/comment}" method="post" class="space-y-4">
-                        <input type="hidden" name="diaryId" th:value="${diary.id}">
+
 
                         <textarea name="content"
                                   rows="4"
@@ -210,6 +216,7 @@
                         </div>
 
                         <div class="flex-1 min-w-0">
+                            <input type="hidden" name="diaryId" th:value="${diary.id}">
                             <p class="text-base font-bold text-stone-800" th:text="${diary.writerName}">전계림</p>
                             <p class="text-sm text-stone-500 truncate"
                                th:text="${diary.writerEmail != null ? diary.writerEmail : '사용자'}">
@@ -219,12 +226,11 @@
                     </div>
 
                     <div class="mt-5">
-                        <form th:action="@{/follow/{memberId}(memberId=${diary.writerId})}" method="post">
-                            <button type="submit"
+                        <input type="hidden" name="writerId" th:value="${diary.writerId}">
+                            <button type="button" id="followBt"
                                     class="w-full px-4 py-3 rounded-2xl bg-rose-400 text-white font-semibold hover:bg-rose-500 transition shadow-sm">
                                 팔로우 신청
                             </button>
-                        </form>
                     </div>
                 </section>
 
@@ -306,29 +312,70 @@
     </main>
 
     <script>
+        //팔로우 버튼
+        $("#followBt").click(
+            function(){
+                const data = { id : $("input[name=writerId]").val() }
+                const token = $("meta[name='_csrf']").attr("content");
+                const header = $("meta[name='_csrf_header']").attr("content");
+
+                $.ajax( {
+                    url : "/api/follow",
+                    method : "POST" ,
+                    contentType : "application/json",
+                    data : JSON.stringify(data),
+                    beforeSend : function(xhr){
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success : function(res){
+                        console.log(res);
+                        $("#followBt").text(res.isFollow ? '팔로우 취소' : '팔로우 신청')
+                    },
+                    error : function(xhr){
+                        console.log("실패", xhr.status);
+                    }
+                } );
+            }
+        );
+
+        //공감 버튼
         $("#empathyBt").click(
             function() {
                 // 화면의 공감수 증감 해주기
-                let count = Number( $("#empathyCount").data("count") ); // 현재 공감수
-                let isEmpathy = $(this).data("isempathy"); // 로그인한 사람의 공감여부
-                if( isEmpathy === false)
-                    count++;
-                else
-                    count--;
-                // 화면의 공감수 변경
-                $("#empathyCount").text(count);
-                $("#empathyCount").data("count",count);
-                $(this).text(isEmpathy ? '공감 보내기' : '공감 회수');
-                $(this).data("isempathy",!isEmpathy);
+                // let count = Number( $("#empathyCount").data("count") ); // 현재 공감수
+                // let isEmpathy = $(this).data("isempathy"); // 로그인한 사람의 공감여부
+                // if( isEmpathy === false)
+                //     count++;
+                // else
+                //     count--;
+                // // 화면의 공감수 변경
+                // $("#empathyCount").text(count);
+                // $("#empathyCount").data("count",count);
+                // $(this).text(isEmpathy ? '공감 보내기' : '공감 회수');
+                // $(this).data("isempathy",!isEmpathy);
 
                 const data = { id : $("input[name=diaryId]").val() }
-
+                            //  { id : 4 }
                 // 서버에 값 보내기
+                const token = $("meta[name='_csrf']").attr("content");
+                const header = $("meta[name='_csrf_header']").attr("content");
+
                 $.ajax( {
                     url : "/api/empathy",
                     method : "POST" ,
                     contentType : "application/json",
-                    data : JSON.stringify(data)
+                    data : JSON.stringify(data),
+                    beforeSend : function(xhr){
+                      xhr.setRequestHeader(header, token);
+                    },
+                    success : function(res){
+                        console.log(res);
+                        $("#empathyCount").text(res.count);
+                        $("#empathyBt").text(res.isLike ? '공감 회수' : '공감 보내기')
+                    },
+                    error : function(xhr){
+                        console.log("실패", xhr.status);
+                    }
                 } );
             }
         );
