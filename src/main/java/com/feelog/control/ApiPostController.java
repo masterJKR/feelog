@@ -1,9 +1,12 @@
 package com.feelog.control;
 
-import com.feelog.Entity.Follow;
+import com.feelog.Dto.CommentRequestDto;
+import com.feelog.Dto.CommentResponseDto;
+import com.feelog.service.CommentService;
 import com.feelog.service.DiaryLikeService;
 import com.feelog.service.FollowService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,22 @@ public class ApiPostController {
 
     private final DiaryLikeService diaryLikeService;
     private final FollowService followService;
+    private final CommentService commentService;
+
+    //댓글 저장
+    @PostMapping("/comment")
+    @ResponseBody
+    public ResponseEntity<CommentResponseDto> writeComment(
+            @RequestBody CommentRequestDto commentRequestDto,
+            Principal principal){
+        String email = principal.getName();
+        System.out.println("b" + commentRequestDto.getContent());
+        CommentResponseDto responseDto =
+                commentService.write( commentRequestDto , email );
+        System.out.println("a" + responseDto.getContent());
+        return ResponseEntity.ok(responseDto);
+    }
+
 
     // 팔로우 신청, 취소
     @PostMapping("/follow")

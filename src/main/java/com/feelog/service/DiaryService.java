@@ -1,8 +1,10 @@
 package com.feelog.service;
 
+import com.feelog.Dto.CommentDto;
 import com.feelog.Dto.DiaryDetailDto;
 import com.feelog.Dto.DiaryDto;
 import com.feelog.Dto.DiaryListDto;
+import com.feelog.Entity.Comment;
 import com.feelog.Entity.Diary;
 import com.feelog.Entity.Member;
 import com.feelog.constant.Emotion;
@@ -25,6 +27,7 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
+    private final CommentService commentService;
 
     
     // 목록 출력할 내용 가져오기
@@ -71,6 +74,11 @@ public class DiaryService {
         Member login= memberRepository.findByEmail(email);
         // 일기 작성한 사람과 로그인한 사람이 같은 사람인가? - 삭제,수정 권한
         diaryDetailDto.setMe( login.getId() == diary.getMember().getId()  );
+
+        /// 현재 일기의  댓글 전부 가져오기
+        List<CommentDto> comments = commentService.getAll( diary.getId(),email );
+
+        diaryDetailDto.setCommentDtoList(comments);
 
         return diaryDetailDto;
     }
