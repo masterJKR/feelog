@@ -12,13 +12,20 @@ import com.feelog.repository.DiaryRepository;
 import com.feelog.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +35,8 @@ public class DiaryService {
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
     private final CommentService commentService;
-
+    @Value("${app.upload-dir}")
+    private String uploadRoot;
     
     // 목록 출력할 내용 가져오기
     public Page<DiaryListDto> getDiaryList(String keyword, Emotion emotion, Pageable pageable) {
@@ -117,5 +125,21 @@ public class DiaryService {
 
     public void deleteDiary(Long id) {
         diaryRepository.deleteById( id );
+    }
+
+    public String saveSummernoteImage(MultipartFile file) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+
+        String storedFileName = UUID.randomUUID() + "." + ext;
+
+        Path saveDir = Paths.get(uploadRoot, "diary");
+        Files.createDirectories(saveDir);
+
+        Path savePath = saveDir.resolve(storedFileName);
+        file.transferTo(savePath.toFile());
+
+        return "/uploads/diary/" + storedFileName;
+
     }
 }

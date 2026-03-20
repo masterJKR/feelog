@@ -4,6 +4,10 @@
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="main">
+    <head>
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </head>
     <main class="flex-grow px-6 py-10 md:py-14">
         <div class="max-w-5xl mx-auto">
 
@@ -73,7 +77,7 @@
                     <form th:action="@{/diary/new}"
                           method="post"
                           th:object="${diaryDto}"
-                          class="space-y-7">
+                          class="space-y-7" enctype="multipart/form-data">
 
                         <input type="hidden"  th:field="*{id}">
                         <!-- 날짜 -->
@@ -240,16 +244,50 @@
                 tabsize: 2,
                 height: 320,
                 focus: false,
+                dialogsInBody: true,
                 toolbar: [
                     ['style', ['style']],
                     ['font', ['bold', 'underline', 'clear']],
                     ['color', ['color']],
                     ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link']],
+                    ['insert', ['link','picture']],
                     ['view', ['codeview']]
-                ]
+                ],
+                callbacks: {
+                    onImageUpload: function(files) {
+                        for (let i = 0; i < files.length; i++) {
+                            uploadSummernoteImage(files[i], this);
+                        }
+                    }
+                }
             });
         });
+        function uploadSummernoteImage(file, editor) {
+            const formData = new FormData();
+            formData.append("file", file);
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+            fetch('/diary/image/upload', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('이미지 업로드 실패');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    $('#summernote').summernote('insertImage', data.url);
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('이미지 업로드 중 오류가 발생했습니다.');
+                });
+        }
     </script>
 
     <style>
@@ -275,6 +313,13 @@
 
         .note-placeholder {
             color: rgb(168 162 158) !important;
+        }
+        .note-modal {
+            z-index: 2000 !important;
+        }
+
+        .note-modal-backdrop {
+            z-index: 1990 !important;
         }
     </style>
 </div>

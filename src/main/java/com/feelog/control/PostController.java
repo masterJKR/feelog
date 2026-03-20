@@ -16,8 +16,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -115,6 +119,20 @@ public class PostController {
         diaryService.saveDiary(diaryDto , principal.getName()  );
 
         return "redirect:/"; // 저장후 첫페이지 이동
+    }
+
+    @PostMapping("/image/upload")
+    @ResponseBody
+    public Map<String, String> uploadSummernoteImage(@RequestParam("file") MultipartFile file) throws IOException {
+        String url=null;
+        try {
+            url = diaryService.saveSummernoteImage(file);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        Map<String, String> result = new HashMap<>();
+        result.put("url", url);
+        return result;
     }
 }
 
